@@ -33,6 +33,11 @@ then find python, it should be a background task
 
 select it, then press end task
 
+# Contribute
+if you want to contribute into this project, fork this project ,code, then open a pull request 
+
+ps : the dev branch is for development
+
 ## run the program everytime your computer starts
 
 press `windows + r`
