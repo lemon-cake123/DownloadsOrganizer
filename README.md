@@ -19,12 +19,16 @@ how to install DownloadOrganizer
 and you are done
 
 ### Method 2:
-1. install python with the link in method 1, you will also need git instaled [install git](https://git-scm.com/)
+1. install python with the link in method 1, you w ill also need git instaled [install git](https://git-scm.com/)
 
 2. type the following command 
 `git clone https://github.com/lemon-cake123/DownloadsOrganizer.git & cd DownloadsOrganizer`
 
-3. then type this command `organizer_run.bat`
+3. close command prompt and find Organizer.zip
+4. extract the file and save it to C:\Users\USER
+5. run the organizer_run.bat file
+
+youre done
 
 ## killing the program
 if you do not want the program running anymore, open task manager
@@ -33,10 +37,6 @@ then find python, it should be a background task
 
 select it, then press end task
 
-# Contribute
-if you want to contribute into this project, fork this project ,code, then open a pull request 
-
-ps : the dev branch is for development
 
 ## run the program everytime your computer starts
 
@@ -47,6 +47,12 @@ on the window that just oppened, type `shell:startup`
 on the folder that opened, right click then select new -> shortcut
 
 create a shortcut to the organizer_run.bat file
+
+# Contribute
+if you want to contribute into this project, fork this project ,code, then open a pull request 
+
+ps : the dev branch is for development
+
 
 
 
