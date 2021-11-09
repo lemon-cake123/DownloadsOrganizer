@@ -1,8 +1,12 @@
 #an app to sort the downloads folder
+'''
+Author : lemon-cake123
+'''
 import os
 import shutil
 import time
 from datetime import datetime
+import json
 
 clock = datetime.now()
 Downloads_folder = os.path.join(os.path.expanduser('~'),'downloads')
@@ -10,14 +14,37 @@ Downloads_folder = os.path.join(os.path.expanduser('~'),'downloads')
 with open('logs.txt','w') as f:
     print(f"[{clock.ctime()}] created logs.txt")
 
-Document_types={
-    "text documents":[".txt",".doc",".docx"],
-    "PDF files":[".pdf"],
-    "media files":['.jpeg','.jpg','.svg','.png','.PNG',".mp4",".mp3",".wav"],
-    "compressed files":['.zip'],
-    "powerpoint files":['.pptx','.ppt'],
-    "excel files":['.xlsx','.xls'],
-    }
+try:
+    with open('settings.json','r') as f:
+        json_data = json.load(f)
+        Document_types = json_data['settings']
+except FileNotFoundError as e:
+    #file does not exist,create it and use the following settings
+    with open('settings.json','w') as f:
+        f.write('''
+{
+	"Comment":"JSON file used for customizing DownloadsOrganizer format is folder_name:[list,of,extentions]",
+	"settings":
+	{
+	"text documents":[".txt",".doc",".docx"],
+        "PDF files":[".pdf"],
+        "media files":[".jpeg",".jpg",".svg",".png",".PNG",".mp4",".mp3",".wav"],
+        "compressed files":[".zip"],
+        "powerpoint files":[".pptx",".ppt"],
+        "excel files":[".xlsx",".xls"]
+	}
+}
+
+''')
+    Document_types={
+        "text documents":[".txt",".doc",".docx"],
+        "PDF files":[".pdf"],
+        "media files":['.jpeg','.jpg','.svg','.png','.PNG',".mp4",".mp3",".wav"],
+        "compressed files":['.zip'],
+        "powerpoint files":['.pptx','.ppt'],
+        "excel files":['.xlsx','.xls'],
+        }
+    
 with open('logs.txt','a') as f:
     while True:
         try:
@@ -38,33 +65,36 @@ with open('logs.txt','a') as f:
                 except FileExistsError as e:
                     pass
                 
-                with os.scandir(Downloads_folder) as entries:   
+                with os.scandir(Downloads_folder) as entries:
                     for entry in entries:
                         f.write(f"\n [{clock.ctime()}] preparing to move {entry.name}")
                         if entry.is_file:
-                            if os.path.splitext(entry)[1] in Document_types['text documents']:
-                                shutil.move(entry,os.path.join(Downloads_folder,"text documents"))
-                                f.write(f'\n [{clock.ctime()}] moved entry {entry.name} to text documents')                            
-                            elif os.path.splitext(entry)[1] in Document_types['PDF files']:
-                                shutil.move(entry,os.path.join(Downloads_folder,"PDF files"))
-                                f.write(f'\n [{clock.ctime()}] moved entry {entry.name} to PDF files')
+                            moved = False
 
-                            elif os.path.splitext(entry)[1] in Document_types['media files']:
-                                shutil.move(entry,os.path.join(Downloads_folder,"media files"))
-                                f.write(f'\n [{clock.ctime()}] moved entry {entry.name} to media files')
-
-                            elif os.path.splitext(entry)[1] in Document_types['compressed files']:
-                                shutil.move(entry,os.path.join(Downloads_folder,"compressed files"))
-                                f.write(f'\n [{clock.ctime()}] moved entry {entry.name} to compressed files')
+                            for key,value in Document_types.items():
+                                if os.path.splitext(entry)[1] in value:
+                                    if not os.path.exists(os.path.join(Downloads_folder,key,entry)):
+                                        shutil.move(entry,os.path.join(Downloads_folder,key))
+                                        moved = True
+                                        f.write("\n [{clock.ctime()}] moved {entry.name} to {key}")
+                                    else:
+                                        f.write(f"\n [{clock.ctime()}] {entry.name} already exist in {key}, aborted move")
+                                        moved = True # to avoid moving to other files
+                                        
+                            
                                 
-                            else:
+                            
+                            if not moved:
                                 if not entry.is_dir():
-                                    
-                                    shutil.move(entry,os.path.join(Downloads_folder,"other files"))
-                                    f.write(f'\n [{clock.ctime()}] moved entry {entry.name} to other files')
+                                    if not os.path.exists(os.path.join(Downloads_folder,"other files",entry)):
+                                        
+                                        shutil.move(entry,os.path.join(Downloads_folder,"other files"))
+                                        f.write(f'\n [{clock.ctime()}] moved entry {entry.name} to other files')
+                                    else:
+                                        f.write(f"\n [{clock.ctime()}] {entry.name} already exist in other files, aborted move")
                                 else:
                                     f.write(f'\n [{clock.ctime()}] {entry.name} was a folder. aborted move')
-                                    
+                                                       
                     
                 
             time.sleep(300)
