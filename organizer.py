@@ -99,6 +99,29 @@ with open('logs.txt','a') as f:
                 
             time.sleep(300)
             clock = datetime.now()
+            try:
+                with open('settings.json','r') as j:
+                    json_data = json.load(j)
+                    Documents_types = json_data['settings']
+            except FileNotFoundError as e:
+                with open('settings.json','w') as j:
+                    j.write('''
+{
+	"Comment":"JSON file used for customizing DownloadsOrganizer format is folder_name:[list,of,extentions]",
+	"settings":
+	{
+	"text documents":[".txt",".doc",".docx"],
+        "PDF files":[".pdf"],
+        "media files":[".jpeg",".jpg",".svg",".png",".PNG",".mp4",".mp3",".wav"],
+        "compressed files":[".zip"],
+        "powerpoint files":[".pptx",".ppt"],
+        "excel files":[".xlsx",".xls"]
+	}
+}
+''')
+                    
+                
+            
         except Exception as exc:
             f.write(f'\n [{clock.ctime()}] FATAL: {exc}, aborting task')
             f.close()
