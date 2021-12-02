@@ -67,33 +67,30 @@ with open('logs.txt','a') as f:
                 
                 with os.scandir(Downloads_folder) as entries:
                     for entry in entries:
-                        f.write(f"\n [{clock.ctime()}] preparing to move {entry.name}")
-                        if entry.is_file:
+                        if not entry.is_dir():
+                            f.write(f"\n [{clock.ctime()}] preparing to move {entry.name}")
                             moved = False
 
                             for key,value in Document_types.items():
                                 if os.path.splitext(entry)[1] in value:
-                                    if not os.path.exists(os.path.join(Downloads_folder,key,entry)):
+                                    try:
                                         shutil.move(entry,os.path.join(Downloads_folder,key))
                                         moved = True
-                                        f.write("\n [{clock.ctime()}] moved {entry.name} to {key}")
-                                    else:
-                                        f.write(f"\n [{clock.ctime()}] {entry.name} already exist in {key}, aborted move")
-                                        moved = True # to avoid moving to other files
-                                        
+                                        f.write(f"\n [{clock.ctime()}] moved {entry.name} to {key}")
+                                    except shutil.Error as e:
+                                        f.write(f'\n [{clock.ctime()}] {entry.name} already exist in other files, aborted move')
+                                        moved = True
                             
                                 
                             
                             if not moved:
-                                if not entry.is_dir():
-                                    if not os.path.exists(os.path.join(Downloads_folder,"other files",entry)):
+                                try:
+                                    shutil.move(entry,os.path.join(Downloads_folder,"other files"))
+                                    f.write(f'\n [{clock.ctime()}] moved entry {entry.name} to other files')
+                                except shutil.Error as e:
+                                    f.write(f'\n [{clock.ctime()}] {entry.name} already exist in other files, aborted move')
                                         
-                                        shutil.move(entry,os.path.join(Downloads_folder,"other files"))
-                                        f.write(f'\n [{clock.ctime()}] moved entry {entry.name} to other files')
-                                    else:
-                                        f.write(f"\n [{clock.ctime()}] {entry.name} already exist in other files, aborted move")
-                                else:
-                                    f.write(f'\n [{clock.ctime()}] {entry.name} was a folder. aborted move')
+                                
                                                        
                     
                 
@@ -128,5 +125,4 @@ with open('logs.txt','a') as f:
             exit()
             
             
-    
     
