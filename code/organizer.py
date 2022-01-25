@@ -78,7 +78,7 @@ with open('logs.txt','a') as f:
                                         moved = True
                                         f.write(f"\n [{clock.ctime()}] moved {entry.name} to {key}")
                                     except shutil.Error as e:
-                                        f.write(f'\n [{clock.ctime()}] {entry.name} already exist in other files, aborted move')
+                                        f.write(f'\n [{clock.ctime()}] {entry.name} already exist in {key}, aborted move')
                                         moved = True
                             
                                 
